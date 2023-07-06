@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-
+import 'virtual:windi.css'
 import Cookies from 'js-cookie'
 
 import ElementPlus from 'element-plus'
