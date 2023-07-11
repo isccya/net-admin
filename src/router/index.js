@@ -57,18 +57,11 @@ export const constantRoutes = [
     component: () => import('@/views/error/401'),
     hidden: true
   },
+  // 配置重定向和默认页面
   {
     path: '',
     component: Layout,
     redirect: '/wireless/overview',
-    children: [
-      {
-        path: 'overview',
-        component: () => import('@/views/wireless/overview'),
-        name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
-      }
-    ]
   },
 
    {
@@ -79,7 +72,7 @@ export const constantRoutes = [
     alwaysShow: true,
     hidden: false,
     meta:{
-      title:'无线监控', icon: "tool",
+      title:'无线监控平台', icon: "tool",
     },
     children: [
       {

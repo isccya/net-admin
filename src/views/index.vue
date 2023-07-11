@@ -1,6 +1,6 @@
 <template>
   <div class="app-container home">
-    这里是首页,并且是
+    这里是首页,并且是无线概览
   </div>
 </template>
 

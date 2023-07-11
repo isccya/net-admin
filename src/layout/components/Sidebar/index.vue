@@ -7,13 +7,12 @@
         :background-color="sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground"
         :text-color="sideTheme === 'theme-dark' ? variables.menuColor : variables.menuLightColor" :unique-opened="true"
         :active-text-color="theme" :collapse-transition="false" mode="vertical" router>
-
         <el-sub-menu index="1">
           <template #title>
             <el-icon>
               <Platform />
             </el-icon>
-            <span>无线网络管理平台</span>
+            <span>无线网络监控平台</span>
           </template>
           <el-menu-item index="/wireless/overview">
             <el-icon>
@@ -40,6 +39,13 @@
             <span>&nbsp;&nbsp;待定</span>
           </el-menu-item>
         </el-sub-menu>
+        
+        <!-- <el-menu-item index="4">
+          <el-icon>
+            <setting />
+          </el-icon>
+          <template #title>Navigator Four</template>
+        </el-menu-item> -->
         <el-sub-menu index="2" disabled>
           <template #title>
             <el-icon>
@@ -48,45 +54,6 @@
             <span>有线网络管理平台</span>
           </template>
         </el-sub-menu>
-
-        <!-- <el-sub-menu index="1">
-          <template #title>
-            <el-icon>
-              <location />
-            </el-icon>
-            <span>Navigator One</span>
-          </template>
-          <el-menu-item-group>
-            <template #title><span>Group One</span></template>
-            <el-menu-item index="1-1">item one</el-menu-item>
-            <el-menu-item index="1-2">item two</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="Group Two">
-            <el-menu-item index="1-3">item three</el-menu-item>
-          </el-menu-item-group>
-          <el-sub-menu index="1-4">
-            <template #title><span>item four</span></template>
-            <el-menu-item index="1-4-1">item one</el-menu-item>
-          </el-sub-menu>
-        </el-sub-menu>
-        <el-menu-item index="2">
-          <el-icon><icon-menu /></el-icon>
-          <template #title>Navigator Two</template>
-        </el-menu-item>
-        <el-menu-item index="3" disabled>
-          <el-icon>
-            <document />
-          </el-icon>
-          <template #title>Navigator Three</template>
-        </el-menu-item>
-        <el-menu-item index="4">
-          <el-icon>
-            <setting />
-          </el-icon>
-          <template #title>Navigator Four</template>
-        </el-menu-item> -->
-
-
         <sidebar-item v-for="(route, index) in sidebarRouters" :key="route.path + index" :item="route"
           :base-path="route.path" />
       </el-menu>
