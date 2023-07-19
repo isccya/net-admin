@@ -1,5 +1,5 @@
 <template>
-  <div  style="background-color: rgb(239, 241, 240); min-height: calc(100vh - 127px);">
+  <div  style=" min-height: calc(100vh - 127px);">
     <router-view />
   </div>
 </template>
