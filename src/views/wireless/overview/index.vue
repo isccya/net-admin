@@ -177,6 +177,7 @@ function initChart() {
     chartDormitory.setOption(percentDormitory);
     chartEducation.setOption(percentEducation);
     chartOffice.setOption(percentOffice);
+
     window.onresize = function () {
         //自适应大小
         chartDormitory.resize();
@@ -193,13 +194,12 @@ onMounted(() => {
 <template>
     <div class="home app-container">
         <div class="flex justify-between mx-6">
-            <el-col :span="5.5" style="background-color: rgb(239, 241, 244);">
-                <el-card shadow="never" style="background-color: rgb(239, 241, 244); font-size: 2rem;"> AP掉线情况: </el-card>
-            </el-col>
             <div class="flex flex-wrap items-center">
-                <el-dropdown>
+                <span class="text-lg font-medium">AP在线情况:</span>
+                <el-dropdown class="ml-3">
                     <el-button type="primary">
-                        时间<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                        时间
+                        <el-icon class="el-icon--right"><arrow-down /></el-icon>
                     </el-button>
                     <template #dropdown>
                         <el-dropdown-menu>
@@ -213,45 +213,167 @@ onMounted(() => {
             </div>
         </div>
 
-        <el-row :gutter="12">
-            <el-col :span="8" :xs="12" :sm="12" :lg="8">
-                <el-card shadow="always">
-                    <div class="flex items-center justify-evenly">
-                        <div><el-icon color="rgb(87, 161, 240)" size="2.5rem">
-                                <House />
-                            </el-icon></div>
-                        <div class="text-xl">宿舍区</div>
-                        <!-- <div>
-                            <el-tag class="ml-2" type="success">恢复</el-tag>
-                        <el-tag class="ml-2" type="info">掉线</el-tag>
-                        </div> -->
+        <el-row :gutter="12" class="mt-3">
+            <el-col :span="8" :xs="24" :sm="24" :lg="8">
+                <div class="h-35 shadow-md rounded-lg bg-blue-500">
+                    <div class="flex justify-around items-center h-15 text-lg" style="color: white;">
+                        宿舍区
                     </div>
-                </el-card>
-            </el-col>
-            <el-col :span="8" :xs="12" :sm="12" :lg="8">
-                <el-card shadow="always">
-                    <div class="flex items-center justify-evenly">
-                        <div><el-icon color="rgb(87, 161, 240)" size="2.5rem">
-                                <OfficeBuilding />
-                            </el-icon></div>
-                        <div class="text-xl">教学区</div>
-                    </div>
-                </el-card>
-            </el-col>
-            <el-col :span="8" :xs="12" :sm="12" :lg="8">
-                <el-card shadow="always">
-                    <div class="flex items-center justify-evenly">
-                        <div><el-icon color="rgb(87, 161, 240)" size="2.5rem">
+                    <div class="flex justify-evenly items-center h-20" style="background-color: white;">
+                        <el-progress type="circle" :percentage="86" width="56">
+                            <el-icon color="rgb(87, 161, 240)" size="1.5rem">
                                 <School />
-                            </el-icon></div>
-                        <div class="text-xl">办公区</div>
+                            </el-icon>
+                        </el-progress>
+                        <div>
+                            <el-statistic :value="98500">
+                                <template #title>
+                                    <div style="display: inline-flex; align-items: center">
+                                        在线人数
+                                        <el-tooltip effect="dark"
+                                            content="宿舍区"
+                                            placement="top">
+                                            <el-icon style="margin-left: 4px" :size="12">
+                                                <Warning />
+                                            </el-icon>
+                                        </el-tooltip>
+                                    </div>
+                                </template>
+                            </el-statistic>
+                            <div class="statistic-footer">
+                                <div class="footer-item">
+                                    <span class="green">
+                                        123
+                                        <el-icon>
+                                            <CaretTop />
+                                        </el-icon>
+                                    </span>
+                                    <span class="red">
+                                        345
+                                        <el-icon>
+                                            <CaretBottom />
+                                        </el-icon>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </el-col>
+
+            <el-col :span="8" :xs="12" :sm="12" :lg="8">
+                <div class="h-35 shadow-md rounded-lg bg-green-500">
+                    <div class="flex justify-around items-center h-15 text-lg" style="color: white;">
+                        教学区
+                    </div>
+                    <div class="flex justify-evenly items-center h-20" style="background-color: white;">
+                        <el-progress type="circle" :percentage="75.33" width="56" status="success">
+                            <el-icon color="rgb(16, 185, 129)" size="1.5rem">
+                                <OfficeBuilding />
+                            </el-icon>
+                        </el-progress>
+                        <div>
+                            <el-statistic :value="98500">
+                                <template #title>
+                                    <div style="display: inline-flex; align-items: center">
+                                        在线人数
+                                        <el-tooltip effect="dark"
+                                            content="宿舍区"
+                                            placement="top">
+                                            <el-icon style="margin-left: 4px" :size="12">
+                                                <Warning />
+                                            </el-icon>
+                                        </el-tooltip>
+                                    </div>
+                                </template>
+                            </el-statistic>
+                            <div class="statistic-footer">
+                                <div class="footer-item">
+                                    <span class="green">
+                                        2344
+                                        <el-icon>
+                                            <CaretTop />
+                                        </el-icon>
+                                    </span>
+                                    <span class="red">
+                                        1234
+                                        <el-icon>
+                                            <CaretBottom />
+                                        </el-icon>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </el-col>
+
+            <el-col :span="8" :xs="12" :sm="12" :lg="8">
+                <div class="h-35 shadow-md rounded-lg bg-yellow-500">
+                    <div class="flex justify-around items-center h-15 text-lg" style="color: white;">
+                        办公区
+                    </div>
+                    <div class="flex justify-evenly items-center h-20" style="background-color: white;">
+                        <el-progress type="circle" :percentage="97" width="56" status="warning">
+                            <el-icon color="rgb(255, 204, 62)" size="1.5rem">
+                                <Memo />
+                            </el-icon>
+                        </el-progress>
+                        <div>
+                            <el-statistic :value="98500">
+                                <template #title>
+                                    <div style="display: inline-flex; align-items: center">
+                                        在线人数
+                                        <el-tooltip effect="dark"
+                                            content="宿舍区"
+                                            placement="top">
+                                            <el-icon style="margin-left: 4px" :size="12">
+                                                <Warning />
+                                            </el-icon>
+                                        </el-tooltip>
+                                    </div>
+                                </template>
+                            </el-statistic>
+                            <div class="statistic-footer">
+                                <div class="footer-item">
+                                    <span class="green">
+                                        5
+                                        <el-icon>
+                                            <CaretTop />
+                                        </el-icon>
+                                    </span>
+                                    <span class="red">
+                                        2
+                                        <el-icon>
+                                            <CaretBottom />
+                                        </el-icon>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </el-col>
+
+            <!-- <el-col :span="8" :xs="12" :sm="12" :lg="6">
+                <el-card>
+                    <template #header>
+                        <div class="text-center font-600 text-1.25rem">
+                            <span>系统更新公告</span>
+                            <el-icon class="float-right">
+                                <Edit />
+                            </el-icon>
+                        </div>
+                    </template>
+                    <div>
+                        啦啦啦啦啦啦
                     </div>
                 </el-card>
-            </el-col>
+            </el-col> -->
         </el-row>
 
         <div class="mt-8">
-            <el-table :data="tableData" height="450" style="width: 100%;">
+            <el-table :data="tableData" height="400" style="width: 100%;">
                 <el-table-column prop="date" label="AP名称" />
                 <el-table-column prop="date" label="AP状态" />
                 <el-table-column prop="name" label="用户掉线率" />
@@ -284,6 +406,21 @@ onMounted(() => {
 
 
 <style lang="scss" scoped>
+// 数据统计
+.statistic-footer .footer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.green {
+    color: var(--el-color-success);
+}
+
+.red {
+    color: var(--el-color-error);
+}
+
 .panel-group {
     margin-top: 18px;
 
@@ -372,4 +509,9 @@ onMounted(() => {
         }
     }
 }
-</style>
+
+.percentage-label {
+    display: block;
+    margin-top: 10px;
+    font-size: 12px;
+}</style>
