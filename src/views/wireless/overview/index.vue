@@ -1,80 +1,42 @@
 <script setup lang='ts'>
 import * as echarts from "echarts";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
+import { getApInfo, getEventList } from "../../../api/wireless/overview";
+
+// 总数
+const dormCount = ref(0);
+const dormTotal = ref(0);
+const dormPercent = computed(() => {
+    return dormCount.value / dormTotal.value * 100;
+});
+const officeCount = ref(0);
+const officeTotal = ref(0);
+const officePercent = computed(() => {
+    return officeCount.value / officeTotal.value * 100;
+})
+const teachCount = ref(0);
+const teachTotal = ref(0);
+const teachPercent = computed(() => {
+    return teachCount.value / teachTotal.value * 100;
+});
+
+// 上下线数
+const dormDrop = ref(0);
+const dormRecover = ref(0);
+const officeDrop = ref(0);
+const officeRecover = ref(0);
+const teachDrop = ref(0);
+const teachRecover = ref(0);
+
+// 请求时间,区域参数
+const timeValue = ref(1);
+const buildingType = ref(null);
+
 // 默认展示的组件
-const activeIndex = ref('0')
+const activeIndex = ref('all')
+
 // 展示AP掉线事件
-const tableData = [
-    {
-        date: '2016-05-03',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-02',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-04',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-01',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-08',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-06',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-07',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    }, {
-        date: '2016-05-03',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-02',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-04',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-01',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-08',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-06',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-07',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-]
+let tableData: any = reactive([])
 
 let percentDormitory = {
     // 标题
@@ -85,7 +47,7 @@ let percentDormitory = {
         trigger: 'axis',
         axisPointer: {
             type: 'cross'
-          },
+        },
     },
     // 图例组件
     legend: {
@@ -107,22 +69,26 @@ let percentDormitory = {
     //   申明一个X轴
     xAxis: [
         {
-            type: 'category',
-            boundaryGap: false,
-            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            // type: 'category',
+            // boundaryGap: false,
+            // data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            type: 'time',
+            splitLine: {
+                show: false
+            }
         }
     ],
     //   申明一个Y轴
     yAxis: [
         {
             type: 'value',
-  
+
         }
     ],
     //   数据设置在series(系列)中
     series: [
         {
-            name: '全部AP',
+            // name: '全部AP',
             type: 'line',
             smooth: true,
             itemStyle: {
@@ -169,9 +135,9 @@ let percentEducation = {
     },
     tooltip: {
         trigger: 'axis',
-         axisPointer: {
+        axisPointer: {
             type: 'cross'
-          },
+        },
         //   padding: [5, 10]
     },
     // 图例组件
@@ -257,7 +223,7 @@ let percentOffice = {
         trigger: 'axis',
         axisPointer: {
             type: 'cross'
-          },
+        },
     },
     // 图例组件
     legend: {
@@ -333,9 +299,36 @@ let percentOffice = {
         },
     ]
 };
-function handleSelect(index) {
-    console.log(index);
-
+function handleCommand(chooseTime) {
+    timeValue.value = chooseTime;
+    getApInfo(timeValue.value).then((res: any) => {
+        if (res.code === 200) {
+            dormCount.value = res.data.eventCount.dormCount,
+                dormTotal.value = res.data.eventCount.dormTotal,
+                officeCount.value = res.data.eventCount.officeCount,
+                officeTotal.value = res.data.eventCount.officeTotal,
+                teachCount.value = res.data.eventCount.teachCount,
+                teachTotal.value = res.data.eventCount.teachTotal;
+            dormDrop.value = res.data.latestStatus.dormDrop;
+            dormRecover.value = res.data.latestStatus.dormRecover;
+            officeDrop.value = res.data.latestStatus.officeDrop;
+            officeRecover.value = res.data.latestStatus.officeRecover;
+            teachDrop.value = res.data.latestStatus.teachDrop;
+            teachRecover.value = res.data.latestStatus.teachRecover;
+        }
+    })
+    getEventList(timeValue.value).then((res: any) => {
+        tableData = [];
+        tableData.push(...res.data)
+    })
+}
+function handleSelect(chooseBuildingType) {
+    console.log(chooseBuildingType);
+    buildingType.value = chooseBuildingType;
+    getEventList(timeValue.value, buildingType.value).then((res: any) => {
+        tableData.length=0;
+        tableData.push(...res.data);
+    })
 }
 function initChart() {
     let chartDormitory = echarts.init(document.getElementById("dormitory"));
@@ -356,7 +349,52 @@ function initChart() {
 }
 onMounted(() => {
     initChart();
+    getApInfo(timeValue.value).then((res: any) => {
+        if (res.code === 200) {
+            dormCount.value = res.data.eventCount.dormCount,
+                dormTotal.value = res.data.eventCount.dormTotal,
+                officeCount.value = res.data.eventCount.officeCount,
+                officeTotal.value = res.data.eventCount.officeTotal,
+                teachCount.value = res.data.eventCount.teachCount,
+                teachTotal.value = res.data.eventCount.teachTotal;
+            dormDrop.value = res.data.latestStatus.dormDrop;
+            dormRecover.value = res.data.latestStatus.dormRecover;
+            officeDrop.value = res.data.latestStatus.officeDrop;
+            officeRecover.value = res.data.latestStatus.officeRecover;
+            teachDrop.value = res.data.latestStatus.teachDrop;
+            teachRecover.value = res.data.latestStatus.teachRecover;
+        }
+    })
+    getEventList(timeValue.value, buildingType.value).then((res: any) => {
+        tableData.push(...res.data)
+    })
+
+    window.setInterval(() => {
+        getApInfo(timeValue.value).then((res: any) => {
+            if (res.code === 200) {
+                dormCount.value = res.data.eventCount.dormCount,
+                    dormTotal.value = res.data.eventCount.dormTotal,
+                    officeCount.value = res.data.eventCount.officeCount,
+                    officeTotal.value = res.data.eventCount.officeTotal,
+                    teachCount.value = res.data.eventCount.teachCount,
+                    teachTotal.value = res.data.eventCount.teachTotal;
+                dormDrop.value = res.data.latestStatus.dormDrop;
+                dormRecover.value = res.data.latestStatus.dormRecover;
+                officeDrop.value = res.data.latestStatus.officeDrop;
+                officeRecover.value = res.data.latestStatus.officeRecover;
+                teachDrop.value = res.data.latestStatus.teachDrop;
+                teachRecover.value = res.data.latestStatus.teachRecover;
+            }
+        });
+        getEventList(timeValue.value, buildingType.value).then((res: any) => {
+            tableData = [];
+            tableData.push(...res.data)
+        })
+    }, 180000)
 })
+
+
+
 </script>
 
 
@@ -365,20 +403,23 @@ onMounted(() => {
         <div class="flex justify-between mx-6">
             <div class="flex flex-wrap items-center">
                 <span class="text-lg font-medium">AP在线情况:</span>
-                <el-dropdown class="ml-3">
+                <el-dropdown class="ml-3" @command="handleCommand">
                     <el-button type="primary">
                         时间
                         <el-icon class="el-icon--right"><arrow-down /></el-icon>
                     </el-button>
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item>1天内</el-dropdown-item>
-                            <el-dropdown-item>3天内</el-dropdown-item>
-                            <el-dropdown-item>7天内</el-dropdown-item>
-                            <el-dropdown-item>30天内</el-dropdown-item>
+                            <el-dropdown-item command="1">1h内</el-dropdown-item>
+                            <el-dropdown-item command="12">12h内</el-dropdown-item>
+                            <el-dropdown-item command="24">1天内</el-dropdown-item>
+                            <el-dropdown-item command="72">3天内</el-dropdown-item>
+                            <el-dropdown-item command="168">7天内</el-dropdown-item>
+                            <el-dropdown-item command="720">30天内</el-dropdown-item>
                         </el-dropdown-menu>
                     </template>
                 </el-dropdown>
+
             </div>
         </div>
 
@@ -389,16 +430,16 @@ onMounted(() => {
                         宿舍区
                     </div>
                     <div class="flex justify-evenly items-center h-20" style="background-color: white;">
-                        <el-progress type="circle" :percentage="86" width="56">
+                        <el-progress type="circle" :percentage="dormPercent" width="56">
                             <el-icon color="rgb(87, 161, 240)" size="1.5rem">
                                 <School />
                             </el-icon>
                         </el-progress>
                         <div>
-                            <el-statistic :value="1265">
+                            <el-statistic :value="dormCount">
                                 <template #title>
                                     <div style="display: inline-flex; align-items: center">
-                                        当前在线人数
+                                        在线AP数
                                         <el-tooltip effect="dark" content="宿舍区" placement="top">
                                             <el-icon style="margin-left: 4px" :size="12">
                                                 <Warning />
@@ -410,13 +451,13 @@ onMounted(() => {
                             <div class="statistic-footer">
                                 <div class="footer-item">
                                     <span class="green">
-                                        123
+                                        {{ dormRecover }}
                                         <el-icon>
                                             <CaretTop />
                                         </el-icon>
                                     </span>
                                     <span class="red">
-                                        345
+                                        {{ dormDrop }}
                                         <el-icon>
                                             <CaretBottom />
                                         </el-icon>
@@ -428,67 +469,22 @@ onMounted(() => {
                 </div>
             </el-col>
 
-            <el-col :span="8" :xs="12" :sm="12" :lg="8"  class="mt-3">
+            <el-col :span="8" :xs="12" :sm="12" :lg="8" class="mt-3">
                 <div class="h-35 shadow-md rounded-lg bg-green-500">
                     <div class="flex justify-around items-center h-15 text-lg" style="color: white;">
-                        教学区
+                        办公区
                     </div>
                     <div class="flex justify-evenly items-center h-20" style="background-color: white;">
-                        <el-progress type="circle" :percentage="75.33" width="56" status="success">
+                        <el-progress type="circle" :percentage="officePercent" width="56" status="success">
                             <el-icon color="rgb(16, 185, 129)" size="1.5rem">
                                 <OfficeBuilding />
                             </el-icon>
                         </el-progress>
                         <div>
-                            <el-statistic :value="9821">
+                            <el-statistic :value="officeCount">
                                 <template #title>
                                     <div style="display: inline-flex; align-items: center">
-                                        当前在线人数
-                                        <el-tooltip effect="dark" content="教学区" placement="top">
-                                            <el-icon style="margin-left: 4px" :size="12">
-                                                <Warning />
-                                            </el-icon>
-                                        </el-tooltip>
-                                    </div>
-                                </template>
-                            </el-statistic>
-                            <div class="statistic-footer">
-                                <div class="footer-item">
-                                    <span class="green">
-                                        2344
-                                        <el-icon>
-                                            <CaretTop />
-                                        </el-icon>
-                                    </span>
-                                    <span class="red">
-                                        1234
-                                        <el-icon>
-                                            <CaretBottom />
-                                        </el-icon>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </el-col>
-
-            <el-col :span="8" :xs="12" :sm="12" :lg="8"  class="mt-3">
-                <div class="h-35 shadow-md rounded-lg bg-yellow-400">
-                    <div class="flex justify-around items-center h-15 text-lg" style="color: white;">
-                        办公区
-                    </div>
-                    <div class="flex justify-evenly items-center h-20" style="background-color: white;">
-                        <el-progress type="circle" :percentage="97" width="56" color="rgb(252, 211, 77)">
-                            <el-icon color="rgb(252, 211, 77)" size="1.5rem">
-                                <Memo />
-                            </el-icon>
-                        </el-progress>
-                        <div>
-                            <el-statistic :value="4657">
-                                <template #title>
-                                    <div style="display: inline-flex; align-items: center">
-                                        当前在线人数
+                                        在线AP数
                                         <el-tooltip effect="dark" content="办公区" placement="top">
                                             <el-icon style="margin-left: 4px" :size="12">
                                                 <Warning />
@@ -500,13 +496,58 @@ onMounted(() => {
                             <div class="statistic-footer">
                                 <div class="footer-item">
                                     <span class="green">
-                                        5
+                                        {{ officeRecover }}
                                         <el-icon>
                                             <CaretTop />
                                         </el-icon>
                                     </span>
                                     <span class="red">
-                                        2
+                                        {{ officeDrop }}
+                                        <el-icon>
+                                            <CaretBottom />
+                                        </el-icon>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </el-col>
+
+            <el-col :span="8" :xs="12" :sm="12" :lg="8" class="mt-3">
+                <div class="h-35 shadow-md rounded-lg bg-yellow-400">
+                    <div class="flex justify-around items-center h-15 text-lg" style="color: white;">
+                        教学区
+                    </div>
+                    <div class="flex justify-evenly items-center h-20" style="background-color: white;">
+                        <el-progress type="circle" :percentage="teachPercent" width="56" color="rgb(252, 211, 77)">
+                            <el-icon color="rgb(252, 211, 77)" size="1.5rem">
+                                <Memo />
+                            </el-icon>
+                        </el-progress>
+                        <div>
+                            <el-statistic :value="teachCount">
+                                <template #title>
+                                    <div style="display: inline-flex; align-items: center">
+                                        在线AP数
+                                        <el-tooltip effect="dark" content="教学区" placement="top">
+                                            <el-icon style="margin-left: 4px" :size="12">
+                                                <Warning />
+                                            </el-icon>
+                                        </el-tooltip>
+                                    </div>
+                                </template>
+                            </el-statistic>
+                            <div class="statistic-footer">
+                                <div class="footer-item">
+                                    <span class="green">
+                                        {{ teachRecover }}
+                                        <el-icon>
+                                            <CaretTop />
+                                        </el-icon>
+                                    </span>
+                                    <span class="red">
+                                        {{ teachDrop }}
                                         <el-icon>
                                             <CaretBottom />
                                         </el-icon>
@@ -537,10 +578,10 @@ onMounted(() => {
 
         <div class="flex mt-5 items-center">
             <el-menu :default-active="activeIndex" mode="horizontal" :ellipsis="false" @select="handleSelect">
-                <el-menu-item index="0">全部</el-menu-item>
-                <el-menu-item index="1">宿舍区</el-menu-item>
+                <el-menu-item index="all">全部</el-menu-item>
+                <el-menu-item index="0">宿舍区</el-menu-item>
+                <el-menu-item index="1">办公区</el-menu-item>
                 <el-menu-item index="2">教学区</el-menu-item>
-                <el-menu-item index="3">办公区</el-menu-item>
             </el-menu>
             <div class="flex-grow" />
             <!-- <el-radio-group v-model="isCollapse" >
@@ -550,19 +591,51 @@ onMounted(() => {
         </div>
 
         <div class="">
-            <el-table :data="tableData" height="350" style="width: 100%;">
-                <el-table-column prop="date" label="事件" align="center" width="100" />
-                <el-table-column prop="date" label="AP名称" align="center" />
-                <el-table-column prop="date" label="AP状态" align="center" />
-                <el-table-column prop="name" label="用户掉线率" align="center" />
-                <el-table-column prop="name" label="AP类型" align="center" />
+            <el-table :data="tableData" height="350" style="width: 100%;" stripe>
+                <el-table-column prop="eventType" label="事件类型" align="center" width="100">
+                    <template #default="scope">
+                        <el-tag type="danger" v-if="scope.row.eventType === 0">掉线</el-tag>
+                        <el-tag type="success" v-if="scope.row.eventType === 1">上线</el-tag>
+                    </template>
+                    <!-- <el-tag class="ml-2" type="success">上线</el-tag>
+                    <el-tag class="ml-2" type="danger" v-if="">掉线</el-tag> -->
+                </el-table-column>
+                <el-table-column prop="apName" label="AP名称" align="center" />
+                <el-table-column prop="apModel" label="AP型号" align="center" />
+                <el-table-column prop="mac" label="Mac地址" align="center" />
+                <el-table-column prop="ip" label="IP地址" align="center" />
+                <el-table-column prop="name" label="楼栋类型" align="center">
+                    <template #default="scope">
+                        <div v-if="scope.row.buildingType === 0">
+                            宿舍区
+                        </div>
+                        <div v-else-if="scope.row.buildingType === 1">
+                            办公区
+                        </div>
+                        <div v-else="scope.row.buildingType===2">
+                            教学区
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="name" label="平台类型" align="center">
+                    <template #default="scope">
+                        <div v-if="scope.row.platform === 0">
+                            H3C平台
+                        </div>
+                        <div v-if="scope.row.platform === 1">
+                            HuaWei平台
+                        </div>
+                    </template>
+                </el-table-column>
+
+
                 <!-- <el-table-column prop="name" label="AP版本" />
                 <el-table-column prop="name" label="Mac地址" />
                 <el-table-column prop="name" label="AP组" /> -->
-                <el-table-column label="操作" width="135" align="center">
+                <!-- <el-table-column label="操作" width="135" align="center">
                     <el-button type="primary" size="small">查看</el-button>
                     <el-button type="danger" size="small">删除</el-button>
-                </el-table-column>
+                </el-table-column> -->
             </el-table>
         </div>
 

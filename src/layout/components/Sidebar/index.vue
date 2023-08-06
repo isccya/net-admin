@@ -24,13 +24,13 @@
             <el-icon>
               <Files />
             </el-icon>
-            <span>&nbsp;&nbsp;详情</span>
+            <span>&nbsp;&nbsp;AP详情</span>
           </el-menu-item>
-          <el-menu-item index="1-3">
+          <el-menu-item index="/wireless/message">
             <el-icon>
-              <Files />
+              <Message />
             </el-icon>
-            <span>&nbsp;&nbsp;待定</span>
+            <span>&nbsp;&nbsp;消息通知</span>
           </el-menu-item>
           <el-menu-item index="1-4">
             <el-icon>
@@ -39,7 +39,7 @@
             <span>&nbsp;&nbsp;待定</span>
           </el-menu-item>
         </el-sub-menu>
-        
+
         <!-- <el-menu-item index="4">
           <el-icon>
             <setting />
@@ -51,7 +51,7 @@
             <el-icon>
               <location />
             </el-icon>
-            <span>有线网络管理平台</span>
+            <span>有线网络监控平台</span>
           </template>
         </el-sub-menu>
         <sidebar-item v-for="(route, index) in sidebarRouters" :key="route.path + index" :item="route"

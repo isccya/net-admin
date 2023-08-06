@@ -86,7 +86,13 @@ export const constantRoutes = [
         component: () => import('@/views/wireless/all/index'),
         name: 'All',
         meta: { title: '无线详情', icon: 'dashboard' }
-      }
+      },
+      {
+        path: 'message',
+        component: () => import('@/views/wireless/message/index'),
+        name: 'Message',
+        meta: { title: '消息通知', icon: 'dashboard' }
+      },
     ]
   },
 ]
