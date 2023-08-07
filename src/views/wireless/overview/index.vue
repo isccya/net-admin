@@ -28,15 +28,18 @@ const officeRecover = ref(0);
 const teachDrop = ref(0);
 const teachRecover = ref(0);
 
-// 请求时间,区域参数
+// 请求时间,区域,分页参数
 const timeValue = ref(1);
-const buildingType = ref(null);
+const buildingType = ref(0);
+const size = ref(10); //每页展示的数据
+const current = ref(1);//当前所在页,默认为1
 
 // 默认展示的组件
-const activeIndex = ref('all')
+const activeIndex = ref("0")
 
 // 展示AP掉线事件
 let tableData: any = reactive([])
+let total: any = ref(10);
 
 let percentDormitory = {
     // 标题
@@ -299,6 +302,15 @@ let percentOffice = {
         },
     ]
 };
+// 封装获取事件
+function  queryEventList(){
+    getEventList(timeValue.value, buildingType.value, size.value, current.value).then((res: any) => {
+        total.value = res.data.total;
+        tableData.length = 0;
+        tableData.push(...res.data.list)
+    })
+}
+// 时间筛选
 function handleCommand(chooseTime) {
     timeValue.value = chooseTime;
     getApInfo(timeValue.value).then((res: any) => {
@@ -317,18 +329,23 @@ function handleCommand(chooseTime) {
             teachRecover.value = res.data.latestStatus.teachRecover;
         }
     })
-    getEventList(timeValue.value).then((res: any) => {
-        tableData = [];
-        tableData.push(...res.data)
-    })
+    queryEventList();
 }
+// 区域筛选
 function handleSelect(chooseBuildingType) {
     console.log(chooseBuildingType);
     buildingType.value = chooseBuildingType;
-    getEventList(timeValue.value, buildingType.value).then((res: any) => {
-        tableData.length=0;
-        tableData.push(...res.data);
-    })
+    queryEventList();
+}
+// 时间格式化处理
+function timeFormat(time) {
+    const time1 = new Date(time);
+    return time1.toLocaleString();
+}
+// 页数改变时候触发
+function currentChange(choosePage){
+    current.value = choosePage;
+    queryEventList();
 }
 function initChart() {
     let chartDormitory = echarts.init(document.getElementById("dormitory"));
@@ -365,8 +382,9 @@ onMounted(() => {
             teachRecover.value = res.data.latestStatus.teachRecover;
         }
     })
-    getEventList(timeValue.value, buildingType.value).then((res: any) => {
-        tableData.push(...res.data)
+    getEventList(timeValue.value, buildingType.value, size.value, current.value).then((res: any) => {
+        total.value = res.data.total;
+        tableData.push(...res.data.list)
     })
 
     window.setInterval(() => {
@@ -386,10 +404,7 @@ onMounted(() => {
                 teachRecover.value = res.data.latestStatus.teachRecover;
             }
         });
-        getEventList(timeValue.value, buildingType.value).then((res: any) => {
-            tableData = [];
-            tableData.push(...res.data)
-        })
+        queryEventList();
     }, 180000)
 })
 
@@ -423,6 +438,7 @@ onMounted(() => {
             </div>
         </div>
 
+        <!-- ap实时信息 -->
         <el-row :gutter="12">
             <el-col :span="8" :xs="24" :sm="24" :lg="8" class="mt-3">
                 <div class="h-35 shadow-md rounded-lg bg-blue-500">
@@ -578,10 +594,10 @@ onMounted(() => {
 
         <div class="flex mt-5 items-center">
             <el-menu :default-active="activeIndex" mode="horizontal" :ellipsis="false" @select="handleSelect">
-                <el-menu-item index="all">全部</el-menu-item>
-                <el-menu-item index="0">宿舍区</el-menu-item>
-                <el-menu-item index="1">办公区</el-menu-item>
-                <el-menu-item index="2">教学区</el-menu-item>
+                <el-menu-item index="0">全部</el-menu-item>
+                <el-menu-item index="1">宿舍区</el-menu-item>
+                <el-menu-item index="2">办公区</el-menu-item>
+                <el-menu-item index="3">教学区</el-menu-item>
             </el-menu>
             <div class="flex-grow" />
             <!-- <el-radio-group v-model="isCollapse" >
@@ -600,19 +616,26 @@ onMounted(() => {
                     <!-- <el-tag class="ml-2" type="success">上线</el-tag>
                     <el-tag class="ml-2" type="danger" v-if="">掉线</el-tag> -->
                 </el-table-column>
+                <el-table-column prop="eventTime" label="时间" align="center">
+                    <template #default="scope">
+                        <div>
+                            {{ timeFormat(scope.row.eventTime) }}
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="apName" label="AP名称" align="center" />
                 <el-table-column prop="apModel" label="AP型号" align="center" />
                 <el-table-column prop="mac" label="Mac地址" align="center" />
                 <el-table-column prop="ip" label="IP地址" align="center" />
                 <el-table-column prop="name" label="楼栋类型" align="center">
                     <template #default="scope">
-                        <div v-if="scope.row.buildingType === 0">
+                        <div v-if="scope.row.buildingType === 1">
                             宿舍区
                         </div>
-                        <div v-else-if="scope.row.buildingType === 1">
+                        <div v-else-if="scope.row.buildingType === 2">
                             办公区
                         </div>
-                        <div v-else="scope.row.buildingType===2">
+                        <div v-else="scope.row.buildingType===3">
                             教学区
                         </div>
                     </template>
@@ -627,18 +650,16 @@ onMounted(() => {
                         </div>
                     </template>
                 </el-table-column>
-
-
-                <!-- <el-table-column prop="name" label="AP版本" />
-                <el-table-column prop="name" label="Mac地址" />
-                <el-table-column prop="name" label="AP组" /> -->
-                <!-- <el-table-column label="操作" width="135" align="center">
-                    <el-button type="primary" size="small">查看</el-button>
-                    <el-button type="danger" size="small">删除</el-button>
-                </el-table-column> -->
             </el-table>
         </div>
 
+        <!-- 分页 -->
+        <div class="mt-5 flex justify-end">
+            <el-pagination background layout="prev, pager, next" :total="total" :page-size="size"
+                v-model:current-page="current" @current-change="currentChange"/>
+        </div>
+
+        <!-- ap变化折线图 -->
         <el-row :gutter="32" class="mt-10">
             <el-col :xs="24" :sm="24" :lg="8">
                 <div id="dormitory" :style="{ height: '300px', backgroundColor: 'white', marginTop: '1rem' }"></div>

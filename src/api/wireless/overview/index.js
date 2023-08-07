@@ -12,13 +12,15 @@ export function getApInfo(scope){
 }
 
 // 获取掉线上线事件
-export function getEventList(scope,buildingType){
+export function getEventList(scope,buildingType,size,current){
     return request({
         method:"get",
         url:`/overview/event`,
         params:{
             scope,
-            buildingType
+            buildingType,
+            size,
+            current
         }
     })
 }
