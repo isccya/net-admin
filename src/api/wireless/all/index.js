@@ -20,9 +20,9 @@ export function getApList(building,params) {
 }
 
 // 获取详细ap信息
-export function getApDetail() {
+export function getApDetail(sn) {
     return request({
         method: 'get',
-        url: "/ap/detail/{sn}",
+        url: `/ap/detail/${sn}`,
     })
 }

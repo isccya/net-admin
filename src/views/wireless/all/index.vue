@@ -1,12 +1,12 @@
 <script setup lang='ts'>
 import { nextTick, onMounted, reactive, ref } from 'vue';
-import { getApTree, getApList } from '../../../api/wireless/all';
+import { getApTree, getApList, getApDetail } from '../../../api/wireless/all';
 // 获取ap树,ap列表请求参数
 const queryParams = reactive({
    apName: "", //ap名称
    state: "",  //ap状态
 })
-
+// ap树
 const apTree = reactive([
    {
       Building: 'dormBuilding',
@@ -21,11 +21,14 @@ const apTree = reactive([
       children: reactive([]),
    },
 ]);
+// ap详情
+let apDetail: any = reactive({})
+
 
 const loading = ref(true); // 控制列表加载
 const showSearch = ref(true); //是否展示搜索区域
 const isExpandAll = ref(false);//是否展开所有数据
-const dialogVisible = ref(false) //ap详细信息弹出框
+const dialogVisible = ref(false) //H3Cap详细信息弹出框
 const judgeState = [{ value: null, label: '全部' }, { value: '1', label: '正常' }, { value: '2', label: '故障' }]
 
 // 获取ap树
@@ -57,8 +60,6 @@ function queryApTree() {
          traverse(building);
       }
       loading.value = false;
-      console.log(apTree);
-
    })
 }
 // ap树懒加载
@@ -79,7 +80,30 @@ function load(row, treeNode, resolve) {
       }
    }
 }
+// 查看ap详细信息
+function queryApDetail(sn) {
+   dialogVisible.value = true;
+   getApDetail(sn).then((res: any) => {
+      if (res.code == 200) {
+         for (let item in res.data) {
+            apDetail[item] = res.data[item];
+         }
+      }
+   })
+}
 
+function formateTime(second) {
+   var duration
+   var days = Math.floor(second / 86400);
+   var hours = Math.floor((second % 86400) / 3600);
+   var minutes = Math.floor(((second % 86400) % 3600) / 60);
+   var seconds = Math.floor(((second % 86400) % 3600) % 60);
+   if (days > 0) duration = days + "天" + hours + "小时" + minutes + "分" + seconds + "秒";
+   else if (hours > 0) duration = hours + "小时" + minutes + "分" + seconds + "秒";
+   else if (minutes > 0) duration = minutes + "分" + seconds + "秒";
+   else if (seconds > 0) duration = seconds + "秒";
+   return duration;
+}
 
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -99,7 +123,8 @@ onMounted(() => {
 
 <template>
    <div class="app-container">
-      <el-form :model="queryParams" :inline="true" v-show="showSearch">
+      <!-- 搜索 -->
+      <!-- <el-form :model="queryParams" :inline="true" v-show="showSearch">
          <el-form-item label="AP名称" prop="apName">
             <el-input v-model="queryParams.apName" placeholder="请输入AP名称" clearable style="width: 200px"
                @keyup.enter="handleQuery" />
@@ -117,8 +142,8 @@ onMounted(() => {
 
       <el-row :gutter="10" class="mb-8">
 
-         <right-toolbar v-model:showSearch="showSearch" @queryTable="queryApTree"></right-toolbar> <!--  隐藏搜索和刷新按钮 -->
-      </el-row>
+         <right-toolbar v-model:showSearch="showSearch" @queryTable="queryApTree"></right-toolbar>  隐藏搜索和刷新按钮
+      </el-row> -->
 
       <el-table v-loading="loading" :data="apTree" row-key="Building" :default-expand-all="isExpandAll" lazy
          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" :load="load">
@@ -152,14 +177,112 @@ onMounted(() => {
             <template #default="scope">
                <div v-if="scope.row.apName">
                   <!-- <el-button link type="primary" icon="Edit" @click="console.log(123)">查看</el-button> -->
-                  <el-button type="primary" plain @click="dialogVisible = !dialogVisible">查看</el-button>
+                  <el-button type="primary" plain @click="queryApDetail(scope.row.sn)">查看</el-button>
                </div>
             </template>
          </el-table-column>
       </el-table>
-      <!-- 详细信息弹出框 -->
-      <el-dialog v-model="dialogVisible" title="AP详细信息" width="30%" align-center>
-         <span>晚上完成弹出框,想一下搜索bug解决方案</span>
+
+      <!-- h3c详细信息弹出框 -->
+      <el-dialog v-model="dialogVisible" title="AP详细信息" width="88%" align-center>
+         <el-descriptions v-if="apDetail.platform === 0" direction="vertical" :column="3" border>
+            <el-descriptions-item label="AP组">{{ apDetail.apGroup }}</el-descriptions-item>
+            <el-descriptions-item label="AP型号">{{ apDetail.apModel }}</el-descriptions-item>
+            <el-descriptions-item label="AP名称">{{ apDetail.apName }}</el-descriptions-item>
+            <el-descriptions-item label="楼栋">{{ apDetail.building }}</el-descriptions-item>
+            <el-descriptions-item label="所属区域">
+               <div v-if="apDetail.buildingType === 1">
+                  宿舍区
+               </div>
+               <div v-else-if="apDetail.buildingType === 2">
+                  办公区
+               </div>
+               <div v-else="apDetail.buildingType===3">
+                  教学区
+               </div>
+            </el-descriptions-item>
+            <el-descriptions-item label="AP状态">
+               <div v-if="apDetail.commonState === 1">
+                  <el-tag type="success">正常</el-tag>
+               </div>
+               <div v-if="apDetail.commonState === 2">
+                  <el-tag type="danger">故障</el-tag>
+               </div>
+            </el-descriptions-item>
+            <el-descriptions-item label="IP地址">{{ apDetail.ip }}</el-descriptions-item>
+            <el-descriptions-item label="上线/离线/版本下载时间">{{ apDetail.lastDropTime }}</el-descriptions-item>
+            <el-descriptions-item label="MAC地址">{{ apDetail.mac }}</el-descriptions-item>
+            <el-descriptions-item label="平台类型">
+               <div v-if="apDetail.platform === 0">
+                  H3C平台
+               </div>
+               <div v-if="apDetail.platform === 1">
+                  HuaWei平台
+               </div>
+            </el-descriptions-item>
+            <el-descriptions-item label="SN">
+               {{ apDetail.sn }}
+            </el-descriptions-item>
+            <el-descriptions-item label="状态更新时间">
+               {{ apDetail.statUpdMoment }}
+            </el-descriptions-item>
+         </el-descriptions>
+
+         <!-- 华为详细信息弹出框 -->
+         <el-descriptions v-if="apDetail.platform === 1" direction="vertical" :column="3" border>
+            <el-descriptions-item label="AP接入失败率">{{ apDetail.accessFailureRate }}</el-descriptions-item>
+            <el-descriptions-item label="AP组">{{ apDetail.apGroup }}</el-descriptions-item>
+            <el-descriptions-item label="APId">{{ apDetail.apId }}</el-descriptions-item>
+            <el-descriptions-item label="AP型号">{{ apDetail.apModel }}</el-descriptions-item>
+            <el-descriptions-item label="AP名称">{{ apDetail.apName }}</el-descriptions-item>
+            <el-descriptions-item label="楼栋">{{ apDetail.building }}</el-descriptions-item>
+            <el-descriptions-item label="所属区域">
+               <div v-if="apDetail.buildingType === 1">
+                  宿舍区
+               </div>
+               <div v-else-if="apDetail.buildingType === 2">
+                  办公区
+               </div>
+               <div v-else="apDetail.buildingType===3">
+                  教学区
+               </div>
+            </el-descriptions-item>
+            <el-descriptions-item label="AP状态">
+               <div v-if="apDetail.commonState === 1">
+                  <el-tag type="success">正常</el-tag>
+               </div>
+               <div v-if="apDetail.commonState === 2">
+                  <el-tag type="danger">故障</el-tag>
+               </div>
+            </el-descriptions-item>
+            <el-descriptions-item label="CPU使用率">{{ apDetail.cpuUseRatio }}</el-descriptions-item>
+            <el-descriptions-item label="掉线率">{{ apDetail.dropRate }}</el-descriptions-item>
+            <el-descriptions-item label="IP地址">{{ apDetail.ip }}</el-descriptions-item>
+            <el-descriptions-item label="上线/离线/版本下载时间">{{ apDetail.lastDropTime }}</el-descriptions-item>
+            <el-descriptions-item label="MAC地址">{{ apDetail.mac }}</el-descriptions-item>
+            <el-descriptions-item label="内存使用率">{{ apDetail.memoryUseRatio }}</el-descriptions-item>
+            <el-descriptions-item label="AP在线时间">{{ formateTime(apDetail.onlineTime) }}</el-descriptions-item>
+            <el-descriptions-item label="在线用户数">{{ apDetail.onlineUserCount }}</el-descriptions-item>
+            <el-descriptions-item label="平台类型">
+               <div v-if="apDetail.platform === 0">
+                  H3C平台
+               </div>
+               <div v-if="apDetail.platform === 1">
+                  HuaWei平台
+               </div>
+            </el-descriptions-item>
+            <el-descriptions-item label="重启次数">{{ apDetail.rebootCount }}</el-descriptions-item>
+            <el-descriptions-item label="断电重启次数">{{ apDetail.rebootCountPowerOff }}</el-descriptions-item>
+            <el-descriptions-item label="SN">
+               {{ apDetail.sn }}
+            </el-descriptions-item>
+            <el-descriptions-item label="状态更新时间">
+               {{ apDetail.statUpdMoment }}
+            </el-descriptions-item>
+            <el-descriptions-item label="版本">{{ apDetail.version }}</el-descriptions-item>
+
+         </el-descriptions>
+
          <template #footer>
             <span class="dialog-footer">
                <el-button @click="dialogVisible = false">取消</el-button>
@@ -168,6 +291,7 @@ onMounted(() => {
                </el-button>
             </span>
          </template>
+
       </el-dialog>
    </div>
 </template>
