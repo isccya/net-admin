@@ -11,10 +11,11 @@ export function getApTree(params) {
 }
 
 // 获取ap列表
-export function getApList(building) {
+export function getApList(building,params) {
     return request({
         url: `/ap/list/${building}`,
         method: 'GET',
+        params,
     })
 }
 

@@ -613,21 +613,19 @@ onMounted(() => {
                         <el-tag type="danger" v-if="scope.row.eventType === 0">掉线</el-tag>
                         <el-tag type="success" v-if="scope.row.eventType === 1">上线</el-tag>
                     </template>
-                    <!-- <el-tag class="ml-2" type="success">上线</el-tag>
-                    <el-tag class="ml-2" type="danger" v-if="">掉线</el-tag> -->
                 </el-table-column>
-                <el-table-column prop="eventTime" label="时间" align="center">
+                <el-table-column prop="eventTime" label="时间" align="center" width="180">
                     <template #default="scope">
                         <div>
                             {{ timeFormat(scope.row.eventTime) }}
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="apName" label="AP名称" align="center" />
-                <el-table-column prop="apModel" label="AP型号" align="center" />
-                <el-table-column prop="mac" label="Mac地址" align="center" />
-                <el-table-column prop="ip" label="IP地址" align="center" />
-                <el-table-column prop="name" label="楼栋类型" align="center">
+                <el-table-column prop="apName" label="AP名称" align="center" width="300"/>
+                <el-table-column prop="apModel" label="AP型号" align="center"  width="180"/>
+                <el-table-column prop="mac" label="Mac地址" align="center"  width="300"/>
+                <el-table-column prop="ip" label="IP地址" align="center"  width="250"/>
+                <el-table-column prop="name" label="楼栋类型" align="center" width="180">
                     <template #default="scope">
                         <div v-if="scope.row.buildingType === 1">
                             宿舍区
@@ -654,9 +652,9 @@ onMounted(() => {
         </div>
 
         <!-- 分页 -->
-        <div class="mt-5 flex justify-end">
+        <div class=" mt-5 flex justify-end">
             <el-pagination background layout="prev, pager, next" :total="total" :page-size="size"
-                v-model:current-page="current" @current-change="currentChange"/>
+                v-model:current-page="current" @current-change="currentChange" :pager-count="6"/>
         </div>
 
         <!-- ap变化折线图 -->
