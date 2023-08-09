@@ -91,7 +91,7 @@ function queryApDetail(sn) {
       }
    })
 }
-
+// 华为ap详细信息时间处理
 function formateTime(second) {
    var duration
    var days = Math.floor(second / 86400);
@@ -149,7 +149,7 @@ onMounted(() => {
          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" :load="load">
          <!-- row-key是行数据的key,优化表格的渲染 -->
          <el-table-column prop="Building" label="AP地址" width="200" align="center" />
-         <el-table-column prop="status" label="AP状态" align="center">
+         <el-table-column prop="status" label="AP状态"  align="center">
             <template #default="scope">
                <div v-if="scope.row.commonState === 1">
                   <el-tag type="success">正常</el-tag>
@@ -159,11 +159,11 @@ onMounted(() => {
                </div>
             </template>
          </el-table-column>
-         <el-table-column prop="apName" label="AP名称" align="center" />
-         <el-table-column prop="apModel" label="AP型号" align="center" />
-         <el-table-column prop="mac" label="Mac地址" align="center" />
-         <el-table-column prop="ip" label="IP地址" align="center" />
-         <el-table-column prop="name" label="平台类型" align="center">
+         <el-table-column prop="apName" label="AP名称" align="center" width="300"/>
+         <el-table-column prop="apModel" label="AP型号" align="center" width="180"/>
+         <el-table-column prop="mac" label="Mac地址" align="center" width="200"/>
+         <el-table-column prop="ip" label="IP地址" align="center" width="200" />
+         <el-table-column prop="name" label="平台类型" align="center"  width="150">
             <template #default="scope">
                <div v-if="scope.row.platform === 0">
                   H3C平台

@@ -303,7 +303,7 @@ let percentOffice = {
     ]
 };
 // 封装获取事件
-function  queryEventList(){
+function queryEventList() {
     getEventList(timeValue.value, buildingType.value, size.value, current.value).then((res: any) => {
         total.value = res.data.total;
         tableData.length = 0;
@@ -343,7 +343,7 @@ function timeFormat(time) {
     return time1.toLocaleString();
 }
 // 页数改变时候触发
-function currentChange(choosePage){
+function currentChange(choosePage) {
     current.value = choosePage;
     queryEventList();
 }
@@ -466,15 +466,15 @@ onMounted(() => {
                             </el-statistic>
                             <div class="statistic-footer">
                                 <div class="footer-item">
-                                    <span class="green">
+                                    <span class="green textSize">
                                         {{ dormRecover }}
-                                        <el-icon>
+                                        <el-icon size="12">
                                             <CaretTop />
                                         </el-icon>
                                     </span>
-                                    <span class="red">
+                                    <span class="red textSize">
                                         {{ dormDrop }}
-                                        <el-icon>
+                                        <el-icon size="12">
                                             <CaretBottom />
                                         </el-icon>
                                     </span>
@@ -511,15 +511,15 @@ onMounted(() => {
                             </el-statistic>
                             <div class="statistic-footer">
                                 <div class="footer-item">
-                                    <span class="green">
+                                    <span class="green textSize">
                                         {{ officeRecover }}
-                                        <el-icon>
+                                        <el-icon size="12">
                                             <CaretTop />
                                         </el-icon>
                                     </span>
-                                    <span class="red">
+                                    <span class="red textSize">
                                         {{ officeDrop }}
-                                        <el-icon>
+                                        <el-icon size="12">
                                             <CaretBottom />
                                         </el-icon>
                                     </span>
@@ -556,15 +556,15 @@ onMounted(() => {
                             </el-statistic>
                             <div class="statistic-footer">
                                 <div class="footer-item">
-                                    <span class="green">
+                                    <span class="green textSize">
                                         {{ teachRecover }}
-                                        <el-icon>
+                                        <el-icon size="12">
                                             <CaretTop />
                                         </el-icon>
                                     </span>
-                                    <span class="red">
+                                    <span class="red textSize">
                                         {{ teachDrop }}
-                                        <el-icon>
+                                        <el-icon size="12">
                                             <CaretBottom />
                                         </el-icon>
                                     </span>
@@ -621,10 +621,10 @@ onMounted(() => {
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="apName" label="AP名称" align="center" width="300"/>
-                <el-table-column prop="apModel" label="AP型号" align="center"  width="180"/>
-                <el-table-column prop="mac" label="Mac地址" align="center"  width="300"/>
-                <el-table-column prop="ip" label="IP地址" align="center"  width="250"/>
+                <el-table-column prop="apName" label="AP名称" align="center" width="300" />
+                <el-table-column prop="apModel" label="AP型号" align="center" width="180" />
+                <el-table-column prop="mac" label="Mac地址" align="center" width="300" />
+                <el-table-column prop="ip" label="IP地址" align="center" width="250" />
                 <el-table-column prop="name" label="楼栋类型" align="center" width="180">
                     <template #default="scope">
                         <div v-if="scope.row.buildingType === 1">
@@ -654,7 +654,7 @@ onMounted(() => {
         <!-- 分页 -->
         <div class=" mt-5 flex justify-end">
             <el-pagination background layout="prev, pager, next" :total="total" :page-size="size"
-                v-model:current-page="current" @current-change="currentChange" :pager-count="6"/>
+                v-model:current-page="current" @current-change="currentChange" :pager-count="6" />
         </div>
 
         <!-- ap变化折线图 -->
@@ -676,6 +676,13 @@ onMounted(() => {
 
 
 <style lang="scss" scoped>
+@media screen and (min-width: 10px) and (max-width: 980px) {
+    .textSize {
+        font-size: 0.9rem;
+        line-height: 1.25rem;
+    }
+}
+
 // 数据统计
 .statistic-footer .footer-item {
     display: flex;
