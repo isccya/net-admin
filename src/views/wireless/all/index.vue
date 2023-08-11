@@ -81,9 +81,9 @@ function load(row, treeNode, resolve) {
    }
 }
 // 查看ap详细信息
-function queryApDetail(sn) {
+function queryApDetail(uuid) {
    dialogVisible.value = true;
-   getApDetail(sn).then((res: any) => {
+   getApDetail(uuid).then((res: any) => {
       if (res.code == 200) {
          for (let item in res.data) {
             apDetail[item] = res.data[item];
@@ -177,7 +177,7 @@ onMounted(() => {
             <template #default="scope">
                <div v-if="scope.row.apName">
                   <!-- <el-button link type="primary" icon="Edit" @click="console.log(123)">查看</el-button> -->
-                  <el-button type="primary" plain @click="queryApDetail(scope.row.sn)">查看</el-button>
+                  <el-button type="primary" plain @click="queryApDetail(scope.row.uuid)">查看</el-button>
                </div>
             </template>
          </el-table-column>
@@ -221,7 +221,7 @@ onMounted(() => {
                </div>
             </el-descriptions-item>
             <el-descriptions-item label="SN">
-               {{ apDetail.sn }}
+               {{ apDetail['ap.sn'] }}
             </el-descriptions-item>
             <el-descriptions-item label="状态更新时间">
                {{ apDetail.statUpdMoment }}
@@ -274,7 +274,7 @@ onMounted(() => {
             <el-descriptions-item label="重启次数">{{ apDetail.rebootCount }}</el-descriptions-item>
             <el-descriptions-item label="断电重启次数">{{ apDetail.rebootCountPowerOff }}</el-descriptions-item>
             <el-descriptions-item label="SN">
-               {{ apDetail.sn }}
+               {{ apDetail['ap.sn'] }}
             </el-descriptions-item>
             <el-descriptions-item label="状态更新时间">
                {{ apDetail.statUpdMoment }}

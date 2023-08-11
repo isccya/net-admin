@@ -31,7 +31,7 @@ const teachRecover = ref(0);
 // 请求时间,区域,分页参数
 const timeValue = ref(1);
 const buildingType = ref(0);
-const size = ref(10); //每页展示的数据
+const size = ref(15); //每页展示的数据
 const current = ref(1);//当前所在页,默认为1
 
 // 默认展示的组件
@@ -607,7 +607,7 @@ onMounted(() => {
         </div>
 
         <div class="">
-            <el-table :data="tableData" height="350" style="width: 100%;" stripe>
+            <el-table :data="tableData" height="360" style="width: 100%;" stripe>
                 <el-table-column prop="eventType" label="事件类型" align="center" width="100">
                     <template #default="scope">
                         <el-tag type="danger" v-if="scope.row.eventType === 0">掉线</el-tag>
@@ -654,7 +654,7 @@ onMounted(() => {
         <!-- 分页 -->
         <div class=" mt-5 flex justify-end">
             <el-pagination background layout="prev, pager, next" :total="total" :page-size="size"
-                v-model:current-page="current" @current-change="currentChange" :pager-count="6" />
+                v-model:current-page="current" @current-change="currentChange" :pager-count="5" />
         </div>
 
         <!-- ap变化折线图 -->

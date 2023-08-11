@@ -32,12 +32,6 @@
             </el-icon>
             <span>&nbsp;&nbsp;消息通知</span>
           </el-menu-item>
-          <el-menu-item index="1-4">
-            <el-icon>
-              <Files />
-            </el-icon>
-            <span>&nbsp;&nbsp;待定</span>
-          </el-menu-item>
         </el-sub-menu>
 
         <!-- <el-menu-item index="4">
