@@ -2,44 +2,36 @@
 import { onMounted, reactive, ref } from 'vue';
 import { getMessageList } from '../../../api/wireless/message';
 import { getMessageInfo } from '../../../api/wireless/message';
-
-const props = {
-  value: "building",
-  label: "building",
-  children: "apList",
-}
-
-// 查看详情,
-// ap详情搜索功能
+import { useRouter } from 'vue-router';
 
 
-const dialogVisible = ref(false)//是否展示对话框
+const router = useRouter();
 const current = ref(1);//当前页数
 const total = ref(0)//一共多少条消息通知
 const size = ref(5)//每一页有多少数据
+const loading = ref(true)
 let messageData: any = reactive([]) //消息列表
-let buildingGroups: any = reactive([])//消息详情
 // 请求消息列表
 function queryMessageList() {
+  loading.value = true;
   getMessageList(size.value, current.value).then((res: any) => {
     if (res.code === 200) {
       total.value = res.data.total;
       messageData.length = 0;
       messageData.push(...res.data.list);
+      loading.value = false;
     }
   });
 }
-// 请求消息详情
-function queryMessageInfo(messageId: number) {
-  getMessageInfo(messageId).then((res: any) => {
-    if (res.code === 200) {
-      buildingGroups.length = 0;
-      buildingGroups.push(...res.data.buildingGroups);
+function jumpTo(messageId) {
+  router.push({
+    name: 'MessageDetail',
+    query: {
+      messageId,
     }
   })
-  dialogVisible.value = true;
-  console.dir(buildingGroups);
 }
+
 // 页数改变时候触发
 function currentChange(choosePage) {
   current.value = choosePage;
@@ -49,16 +41,7 @@ function currentChange(choosePage) {
 function formatDate(val) {
   return new Date(val).toLocaleString();
 }
-function judgeBuildingType(index) {
-  if (index === 1)
-    return '宿舍区';
-  else if (index === 2)
-    return '办公区';
-  else if (index === 3)
-    return '教学区';
-  else
-    return '';
-}
+
 onMounted(() => {
   queryMessageList();
   window.setInterval(() => {
@@ -69,7 +52,7 @@ onMounted(() => {
 
 
 <template>
-  <div class="app-container flex justify-center">
+  <div v-loading="loading" class="app-container flex justify-center">
     <div class="w-1/2 messageData border-3">
       <div class="p-5">
         <el-timeline>
@@ -87,7 +70,7 @@ onMounted(() => {
                     </el-col>
                     <el-col :xs="12" :sm="12" :lg="4" class="flex items-center">
                       <div class="mt-6">
-                        <el-button type="primary" @click="queryMessageInfo(item.messageId)">查看详情</el-button>
+                        <el-button type="primary" @click="jumpTo(item.messageId)">查看详情</el-button>
                       </div>
                     </el-col>
                   </el-row>
@@ -95,17 +78,17 @@ onMounted(() => {
               </div>
               <div v-if="item.messageType === 2"><el-tag class="ml-2 w-26" type="danger" effect="dark"
                   size="large">持续掉线通知</el-tag>
-                <div class="p-3 mt">
+                <div class="p-1 mt">
                   <el-row>
-                    <el-col :xs="12" :sm="12" :lg="12">
+                    <el-col :xs="11" :sm="11" :lg="12">
                       <el-statistic title="持续掉线AP数" :value="item.apTotal" />
                     </el-col>
-                    <el-col :xs="12" :sm="12" :lg="8">
+                    <el-col :xs="13" :sm="13" :lg="8">
                       <el-statistic title="持续掉线AP楼栋数" :value="item.buildingTotal" />
                     </el-col>
                     <el-col :xs="12" :sm="12" :lg="4" class="flex items-center">
                       <div class="mt-6">
-                        <el-button type="primary" @click="queryMessageInfo(item.messageId)">查看详情</el-button>
+                        <el-button type="primary" @click="jumpTo(item.messageId)">查看详情</el-button>
                       </div>
                     </el-col>
                   </el-row>
@@ -123,50 +106,25 @@ onMounted(() => {
                     </el-col>
                     <el-col :xs="12" :sm="12" :lg="4" class="flex items-center">
                       <div class="mt-6">
-                        <el-button type="primary" @click="queryMessageInfo(item.messageId)">查看详情</el-button>
+                        <el-button type="primary" @click="jumpTo(item.messageId)">查看详情</el-button>
                       </div>
                     </el-col>
                   </el-row>
                 </div>
               </div>
-              <div class="mt-5"></div>
+              <div class="mt-3"></div>
             </el-card>
           </el-timeline-item>
         </el-timeline>
-        <!-- 消息对话框 -->
-        <el-dialog v-model="dialogVisible" title="通知详情" width="88%">
-          <div>
-            <el-tree :data="buildingGroups" :props="props" :height="208">
-              <template #default="{ node, data }">
-                <div class="custom-tree-node">
-                  <div>{{ node.label }}</div>
-                  <div>{{ data.apName }}</div>
-                  <div>{{ data.dropId }}</div>
-
-                  <div>{{ judgeBuildingType(data.buildingType) }}</div>
-                </div>
-              </template>
-            </el-tree>
-          </div>
-          <template #footer>
-            <span class="dialog-footer">
-              <el-button @click="dialogVisible = false">取消</el-button>
-              <el-button type="primary" @click="dialogVisible = false">
-                确定
-              </el-button>
-            </span>
-          </template>
-        </el-dialog>
-        <!-- 分页 -->
-        <div class=" mt-5 p-3 flex justify-end">
-          <el-pagination background layout="prev, pager, next" :total="total" :page-size="size"
-            v-model:current-page="current" @current-change="currentChange" :pager-count="5" />
-        </div>
+      </div>
+      <!-- 分页 -->
+      <div class=" pb-5 flex justify-end">
+        <el-pagination background layout=" pager, next" :total="total" :page-size="size" v-model:current-page="current"
+          @current-change="currentChange" :pager-count="5" />
       </div>
     </div>
   </div>
-</template>
-
+</template>4
 
 
 <style lang="scss" scoped>

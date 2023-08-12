@@ -152,7 +152,7 @@ onMounted(() => {
       <el-table v-if="!apShow" v-loading="loading" :data="apTree" row-key="Building" :default-expand-all="isExpandAll" lazy
          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" :load="load">
          <!-- row-key是行数据的key,优化表格的渲染 -->
-         <el-table-column prop="Building" label="AP地址" width="220" align="left" />
+         <el-table-column prop="Building" label="AP地址" width="210" align="left" />
          <el-table-column prop="status" label="AP状态" align="center">
             <template #default="scope">
                <div v-if="scope.row.commonState === 1">
@@ -190,7 +190,7 @@ onMounted(() => {
       <el-table v-if="apShow" v-loading="loading" :data="apTree" row-key="Building" :default-expand-all="isExpandAll" lazy
          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" :load="load">
          <!-- row-key是行数据的key,优化表格的渲染 -->
-         <el-table-column prop="Building" label="AP地址" width="220"   align="left"/>
+         <el-table-column prop="Building" label="AP地址" width="210"   align="left"/>
          <el-table-column prop="status" label="AP状态" align="center">
             <template #default="scope">
                <div v-if="scope.row.commonState === 1">

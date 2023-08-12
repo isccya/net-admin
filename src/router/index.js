@@ -64,15 +64,15 @@ export const constantRoutes = [
     redirect: '/wireless/overview',
   },
 
-   {
+  {
     path: '/wireless',
-    name:'wireless',
+    name: 'wireless',
     component: Layout,
     redirect: 'noRedirect',
     alwaysShow: true,
     hidden: false,
-    meta:{
-      title:'无线监控平台', icon: "tool",
+    meta: {
+      title: '无线监控平台', icon: "tool",
     },
     children: [
       {
@@ -92,6 +92,12 @@ export const constantRoutes = [
         component: () => import('@/views/wireless/message/index'),
         name: 'Message',
         meta: { title: '消息通知', icon: 'dashboard' }
+      },
+      {
+        path: 'messageDetail',
+        component: () => import('@/views/wireless/message/detail'),
+        name: 'MessageDetail',
+        meta: { title: '消息详情' },   
       },
     ]
   },

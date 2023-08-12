@@ -347,25 +347,25 @@ function currentChange(choosePage) {
     current.value = choosePage;
     queryEventList();
 }
-function initChart() {
-    let chartDormitory = echarts.init(document.getElementById("dormitory"));
-    let chartEducation = echarts.init(document.getElementById("education"));
-    let chartOffice = echarts.init(document.getElementById("office"));
+// function initChart() {
+//     let chartDormitory = echarts.init(document.getElementById("dormitory"));
+//     let chartEducation = echarts.init(document.getElementById("education"));
+//     let chartOffice = echarts.init(document.getElementById("office"));
 
-    // 把配置和数据放这里
-    chartDormitory.setOption(percentDormitory);
-    chartEducation.setOption(percentEducation);
-    chartOffice.setOption(percentOffice);
+//     // 把配置和数据放这里
+//     chartDormitory.setOption(percentDormitory);
+//     chartEducation.setOption(percentEducation);
+//     chartOffice.setOption(percentOffice);
 
-    window.onresize = function () {
-        //自适应大小
-        chartDormitory.resize();
-        chartEducation.resize();
-        chartOffice.resize();
-    };
-}
+//     window.onresize = function () {
+//         //自适应大小
+//         chartDormitory.resize();
+//         chartEducation.resize();
+//         chartOffice.resize();
+//     };
+// }
 onMounted(() => {
-    initChart();
+    // initChart();
     getApInfo(timeValue.value).then((res: any) => {
         if (res.code === 200) {
             dormCount.value = res.data.eventCount.dormCount,
@@ -614,7 +614,7 @@ onMounted(() => {
                         <el-tag type="success" v-if="scope.row.eventType === 1">上线</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="eventTime" label="时间" align="center" width="180">
+                <el-table-column prop="eventTime" label="时间" align="center" width="200">
                     <template #default="scope">
                         <div>
                             {{ timeFormat(scope.row.eventTime) }}
@@ -623,9 +623,9 @@ onMounted(() => {
                 </el-table-column>
                 <el-table-column prop="apName" label="AP名称" align="center" width="300" />
                 <el-table-column prop="apModel" label="AP型号" align="center" width="180" />
-                <el-table-column prop="mac" label="Mac地址" align="center" width="300" />
+                <el-table-column prop="mac" label="Mac地址" align="center" width="260" />
                 <el-table-column prop="ip" label="IP地址" align="center" width="250" />
-                <el-table-column prop="name" label="楼栋类型" align="center" width="180">
+                <el-table-column prop="name" label="所属区域" align="center" width="200">
                     <template #default="scope">
                         <div v-if="scope.row.buildingType === 1">
                             宿舍区
@@ -658,7 +658,7 @@ onMounted(() => {
         </div>
 
         <!-- ap变化折线图 -->
-        <el-row :gutter="32" class="mt-10">
+        <!-- <el-row :gutter="32" class="mt-10">
             <el-col :xs="24" :sm="24" :lg="8">
                 <div id="dormitory" :style="{ height: '300px', backgroundColor: 'white', marginTop: '1rem' }"></div>
             </el-col>
@@ -668,7 +668,7 @@ onMounted(() => {
             <el-col :xs="24" :sm="24" :lg="8">
                 <div id="office" :style="{ height: '300px', backgroundColor: 'white', marginTop: '1rem' }"></div>
             </el-col>
-        </el-row>
+        </el-row> -->
 
     </div>
 </template>
