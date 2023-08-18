@@ -2,6 +2,7 @@
 import * as echarts from "echarts";
 import { computed, onMounted, reactive, ref } from "vue";
 import { getApInfo, getEventList } from "../../../api/wireless/overview";
+import { timeFormat } from "../../../utils/timeFormat";
 
 // 总数
 const dormCount = ref(0);
@@ -31,7 +32,7 @@ const teachRecover = ref(0);
 // 请求时间,区域,分页参数
 const timeValue = ref(1);
 const buildingType = ref(0);
-const size = ref(15); //每页展示的数据
+const size = ref(20); //每页展示的数据
 const current = ref(1);//当前所在页,默认为1
 
 // 默认展示的组件
@@ -337,11 +338,7 @@ function handleSelect(chooseBuildingType) {
     buildingType.value = chooseBuildingType;
     queryEventList();
 }
-// 时间格式化处理
-function timeFormat(time) {
-    const time1 = new Date(time);
-    return time1.toLocaleString();
-}
+
 // 页数改变时候触发
 function currentChange(choosePage) {
     current.value = choosePage;
@@ -381,7 +378,7 @@ onMounted(() => {
             teachDrop.value = res.data.latestStatus.teachDrop;
             teachRecover.value = res.data.latestStatus.teachRecover;
         }
-    })
+    })  
     getEventList(timeValue.value, buildingType.value, size.value, current.value).then((res: any) => {
         total.value = res.data.total;
         tableData.push(...res.data.list)
@@ -574,22 +571,6 @@ onMounted(() => {
                     </div>
                 </div>
             </el-col>
-
-            <!-- <el-col :span="8" :xs="12" :sm="12" :lg="6">
-                <el-card>
-                    <template #header>
-                        <div class="text-center font-600 text-1.25rem">
-                            <span>系统更新公告</span>
-                            <el-icon class="float-right">
-                                <Edit />
-                            </el-icon>
-                        </div>
-                    </template>
-                    <div>
-                        啦啦啦啦啦啦
-                    </div>
-                </el-card>
-            </el-col> -->
         </el-row>
 
         <div class="flex mt-5 items-center">
@@ -607,7 +588,7 @@ onMounted(() => {
         </div>
 
         <div class="">
-            <el-table :data="tableData" height="360" style="width: 100%;" stripe>
+            <el-table :data="tableData" height="450" style="width: 100%;" stripe>
                 <el-table-column prop="eventType" label="事件类型" align="center" width="100">
                     <template #default="scope">
                         <el-tag type="danger" v-if="scope.row.eventType === 0">掉线</el-tag>
@@ -653,7 +634,7 @@ onMounted(() => {
 
         <!-- 分页 -->
         <div class=" mt-5 flex justify-end">
-            <el-pagination background layout="prev, pager, next" :total="total" :page-size="size"
+            <el-pagination background layout="prev, pager, next" :total="total" v-model:page-size="size"
                 v-model:current-page="current" @current-change="currentChange" :pager-count="5" />
         </div>
 
